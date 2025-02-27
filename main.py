@@ -1,7 +1,7 @@
 from enum import Enum
 import random
 
-suits = ('Hearts', 'Diamonds', 'Spades', 'Clubs')
+SUITS = ('Hearts', 'Diamonds', 'Spades', 'Clubs')
 
 
 class Ranks(Enum):
@@ -27,114 +27,111 @@ class Card:
         self.value = rank.value
 
     def __str__(self):
-        return self.rank + ' of ' + self.suit
+        return f"{self.rank} of {self.suit}"
 
 
 class Deck:
     def __init__(self):
-        self.cards = [Card(suit, rank) for suit in suits for rank in Ranks]
+        self.cards = [Card(suit, rank) for suit in SUITS for rank in Ranks]
+        self.shuffle()
 
     def shuffle(self):
         random.shuffle(self.cards)
 
-    def remove_one(self):
-        return self.cards.pop(0)
+    def draw_card(self):
+        return self.cards.pop(0) if self.cards else None
 
 
-def hand_value_calculation(hand):
-    values = [0]
-    for card in hand:
-        if card.rank == Ranks.ACE.name:
-            for i in range(len(values)):
-                old_val = values[i]
-                values[i] += Ranks.ACE.value
-                values.append(old_val + 1)
-        else:
-            if len(values):
-                for i in range(len(values)):
-                    values[i] += card.value
+class Hand:
+    def __init__(self):
+        self.cards = []
 
-    return values
+    def add_card(self, card):
+        if card:
+            self.cards.append(card)
+
+    def __str__(self):
+        return " || ".join(str(card) for card in self.cards)
+
+    def calculate_values(self):
+        """Calculate possible hand values, considering Aces as 1 or 11."""
+        values = [0]
+        for card in self.cards:
+            if card.rank == "ACE":
+                values = [v + Ranks.ACE.value for v in values] + [v + 1 for v in values]
+            else:
+                values = [v + card.value for v in values]
+        return values
+
+    def best_value(self):
+        """Return the highest hand value <= 21, otherwise return None (bust)."""
+        return max((v for v in self.calculate_values() if v <= 21), default=None)
+
+    def is_busted(self):
+        return self.best_value() is None
 
 
 class GameBlackJack:
-
     def __init__(self):
         self.deck = Deck()
-        self.deck.shuffle()
-        self.human_hand = []
-        self.computer_hand = []
+        self.human_hand = Hand()
+        self.computer_hand = Hand()
 
-        self.human_hand_calculation = []
-        self.computer_hand_calculation = []
-
-    def show_hand(self, who):
-        print()
-        if who == 'user':
-            print('User hand')
-            for i in range(len(self.human_hand)):
-                print(f'{self.human_hand[i]} || ', end=" ")
-            print('\n')
-        else:
-            print('Dealer hand')
-            for i in range(len(self.computer_hand)):
-                print(f'{self.computer_hand[i]} || ', end=" ")
+    def show_hand(self, player_name, hand):
+        print(f"\n{player_name}'s hand: {hand}")
 
     def check_winner(self):
-        max_valid_human = max((num for num in self.human_hand_calculation if num <= 21), default=None)
-        max_valid_comp = max((num for num in self.computer_hand_calculation if num <= 21), default=None)
-        if max_valid_comp is None:
-            print('Dealer busted! Player wins!')
-            return
-        if max_valid_human is None:
-            print('Player busted! Dealer wins!')
-            return
-        if max_valid_human > max_valid_comp:
-            print('Player wins!')
-            return
-        elif max_valid_comp > max_valid_human:
-            print('Dealer wins!')
-            return
+        human_score = self.human_hand.best_value()
+        computer_score = self.computer_hand.best_value()
+
+        if computer_score is None:
+            print("Dealer busted! Player wins!")
+        elif human_score is None:
+            print("Player busted! Dealer wins!")
+        elif human_score > computer_score:
+            print("Player wins!")
+        elif computer_score > human_score:
+            print("Dealer wins!")
         else:
-            print('Draw')
+            print("It's a draw!")
 
     def play(self):
-        for i in range(2):
-            self.human_hand.append(self.deck.remove_one())
-            self.computer_hand.append(self.deck.remove_one())
-        self.show_hand('user')
-        self.show_hand('dealer')
+        # Initial hands
+        for _ in range(2):
+            self.human_hand.add_card(self.deck.draw_card())
+            self.computer_hand.add_card(self.deck.draw_card())
 
+        self.show_hand("Player", self.human_hand)
+        self.show_hand("Dealer", self.computer_hand)
+
+        # Player's turn
         while True:
-            if input('\nHit or Stay ?').lower() != 'hit':
-                print('Goodbye!')
+            if input("\nHit or Stay? ").strip().lower() != "hit":
+                print("You chose to stay.")
                 break
 
-            self.human_hand.append(self.deck.remove_one())
-            self.human_hand_calculation = hand_value_calculation(self.human_hand)
-            if max((num for num in self.human_hand_calculation if num <= 21), default=None) is None:
-                print('Player busted! Dealer wins!')
+            self.human_hand.add_card(self.deck.draw_card())
+            self.show_hand("Player", self.human_hand)
+
+            if self.human_hand.is_busted():
+                print("Player busted! Dealer wins!")
                 return
 
-            self.show_hand('user')
-            if max((num for num in self.human_hand_calculation if 17 <= num <= 21), default=None) is not None:
-                self.computer_hand_calculation = hand_value_calculation(self.computer_hand)
-                self.show_hand('dealer')
-                break
+        # Dealer's turn
+        while self.computer_hand.best_value() is None or self.computer_hand.best_value() < 17:
+            self.computer_hand.add_card(self.deck.draw_card())
+            self.show_hand("Dealer", self.computer_hand)
 
-            self.computer_hand.append(self.deck.remove_one())
-            self.computer_hand_calculation = hand_value_calculation(self.computer_hand)
-            if max((num for num in self.human_hand_calculation if num <= 21), default=None) is None:
-                print('Dealer busted! Player wins!')
+            if self.computer_hand.is_busted():
+                print("Dealer busted! Player wins!")
                 return
-            self.show_hand('dealer')
 
-
-        print(f'Player hand: {self.human_hand_calculation}')
-        print(f'Dealer hand: {self.computer_hand_calculation}')
+        # Final score check
+        print(f"\nFinal Player hand values: {self.human_hand.calculate_values()}")
+        print(f"Final Dealer hand values: {self.computer_hand.calculate_values()}")
         self.check_winner()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     game = GameBlackJack()
     game.play()
