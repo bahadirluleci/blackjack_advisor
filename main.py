@@ -1,136 +1,49 @@
-from enum import Enum
-import random
+"""
+Blackjack Game - Python Implementation
 
-SUITS = ('Hearts', 'Diamonds', 'Spades', 'Clubs')
+Author: Bahadir Lüleci
+Date: 2025-02-27
+Version: 0.2
 
+Description:
+---------------
+This is a simple console-based Blackjack game implemented in Python.
+The game follows standard Blackjack rules where the player competes
+against the dealer (computer). The objective is to get a hand value
+as close to 21 as possible without exceeding it.
 
-class Ranks(Enum):
-    TWO = 2
-    THREE = 3
-    FOUR = 4
-    FIVE = 5
-    SIX = 6
-    SEVEN = 7
-    EIGHT = 8
-    NINE = 9
-    TEN = 10
-    JACK = 10
-    QUEEN = 10
-    KING = 10
-    ACE = 11
+Features:
+---------------
+- Uses an `Enum` class for card ranks and values.
+- Implements a `Deck` class for shuffling and drawing cards.
+- Supports Ace value adjustments (1 or 11).
+- Player can `Hit` (draw a card) or `Stay` (end turn).
+- Dealer automatically draws until at least 17.
+- Determines the winner based on hand values.
 
+Game Rules:
+---------------
+- Numbered cards (2-10) are worth their face value.
+- Face cards (Jack, Queen, King) are worth 10 points.
+- Aces can be worth 1 or 11, depending on the hand.
+- If the player's total exceeds 21, they "Bust" and lose the game.
+- The dealer wins if they have a higher valid score or the player busts.
+- If both player and dealer have the same valid score, it's a "Draw".
 
-class Card:
-    def __init__(self, suit, rank):
-        self.suit = suit
-        self.rank = rank.name
-        self.value = rank.value
+How to Play:
+---------------
+1. The game starts by dealing two cards to both the player and the dealer.
+2. The player can choose to "Hit" (take another card) or "Stay" (end their turn).
+3. If the player busts (goes over 21), they lose immediately.
+4. Once the player stays, the dealer reveals their hidden card and continues drawing until reaching at least 17.
+5. The winner is determined based on the highest valid hand value.
 
-    def __str__(self):
-        return f"{self.rank} of {self.suit}"
+To play, simply run the script and follow the on-screen prompts.
 
+Enjoy the game!
+"""
 
-class Deck:
-    def __init__(self):
-        self.cards = [Card(suit, rank) for suit in SUITS for rank in Ranks]
-        self.shuffle()
-
-    def shuffle(self):
-        random.shuffle(self.cards)
-
-    def draw_card(self):
-        return self.cards.pop(0) if self.cards else None
-
-
-class Hand:
-    def __init__(self):
-        self.cards = []
-
-    def add_card(self, card):
-        if card:
-            self.cards.append(card)
-
-    def __str__(self):
-        return " || ".join(str(card) for card in self.cards)
-
-    def calculate_values(self):
-        """Calculate possible hand values, considering Aces as 1 or 11."""
-        values = [0]
-        for card in self.cards:
-            if card.rank == "ACE":
-                values = [v + Ranks.ACE.value for v in values] + [v + 1 for v in values]
-            else:
-                values = [v + card.value for v in values]
-        return values
-
-    def best_value(self):
-        """Return the highest hand value <= 21, otherwise return None (bust)."""
-        return max((v for v in self.calculate_values() if v <= 21), default=None)
-
-    def is_busted(self):
-        return self.best_value() is None
-
-
-class GameBlackJack:
-    def __init__(self):
-        self.deck = Deck()
-        self.human_hand = Hand()
-        self.computer_hand = Hand()
-
-    def show_hand(self, player_name, hand):
-        print(f"\n{player_name}'s hand: {hand}")
-
-    def check_winner(self):
-        human_score = self.human_hand.best_value()
-        computer_score = self.computer_hand.best_value()
-
-        if computer_score is None:
-            print("Dealer busted! Player wins!")
-        elif human_score is None:
-            print("Player busted! Dealer wins!")
-        elif human_score > computer_score:
-            print("Player wins!")
-        elif computer_score > human_score:
-            print("Dealer wins!")
-        else:
-            print("It's a draw!")
-
-    def play(self):
-        # Initial hands
-        for _ in range(2):
-            self.human_hand.add_card(self.deck.draw_card())
-            self.computer_hand.add_card(self.deck.draw_card())
-
-        self.show_hand("Player", self.human_hand)
-        self.show_hand("Dealer", self.computer_hand)
-
-        # Player's turn
-        while True:
-            if input("\nHit or Stay? ").strip().lower() != "hit":
-                print("You chose to stay.")
-                break
-
-            self.human_hand.add_card(self.deck.draw_card())
-            self.show_hand("Player", self.human_hand)
-
-            if self.human_hand.is_busted():
-                print("Player busted! Dealer wins!")
-                return
-
-        # Dealer's turn
-        while self.computer_hand.best_value() is None or self.computer_hand.best_value() < 17:
-            self.computer_hand.add_card(self.deck.draw_card())
-            self.show_hand("Dealer", self.computer_hand)
-
-            if self.computer_hand.is_busted():
-                print("Dealer busted! Player wins!")
-                return
-
-        # Final score check
-        print(f"\nFinal Player hand values: {self.human_hand.calculate_values()}")
-        print(f"Final Dealer hand values: {self.computer_hand.calculate_values()}")
-        self.check_winner()
-
+from game import GameBlackJack
 
 if __name__ == "__main__":
     game = GameBlackJack()
