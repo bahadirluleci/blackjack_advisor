@@ -35,8 +35,8 @@ class GameBlackJack:
         self.show_hand("Player", self.human_hand)
         self.show_hand("Dealer", self.computer_hand)
 
-        # Player's turn
         while True:
+            # Player's turn
             if input("\nHit or Stay? ").strip().lower() != "hit":
                 print("You chose to stay.")
                 break
@@ -47,16 +47,20 @@ class GameBlackJack:
             if self.human_hand.is_busted():
                 print("Player busted! Dealer wins!")
                 return
-            self.show_hand("Dealer", self.computer_hand)
 
-        # Dealer's turn
-        while self.computer_hand.best_value() is None or self.computer_hand.best_value() < 17:
-            self.computer_hand.add_card(self.deck.draw_card())
+            # Dealer's turn
+            if self.computer_hand.best_value() is None or self.computer_hand.best_value() < 17:
+                self.computer_hand.add_card(self.deck.draw_card())
             self.show_hand("Dealer", self.computer_hand)
 
             if self.computer_hand.is_busted():
                 print("Dealer busted! Player wins!")
                 return
+
+        # Player choice is stay, wait for the dealer card draw
+        while self.computer_hand.best_value() is None or self.computer_hand.best_value() < 17:
+            self.computer_hand.add_card(self.deck.draw_card())
+            self.show_hand("Dealer", self.computer_hand)
 
         # Final score check
         print(f"\nFinal Player hand values: {self.human_hand.calculate_values()}")
