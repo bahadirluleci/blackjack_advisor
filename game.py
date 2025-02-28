@@ -30,18 +30,8 @@ class GameBlackJack:
         if len(hand.cards) >= 2 and hand.cards[0].rank == hand.cards[1].rank:
             print("You can split your hand!")
 
-    def play(self):
-        # Initial hands
-        for _ in range(2):
-            self.human_hand.add_card(self.deck.draw_card())
-            self.computer_hand.add_card(self.deck.draw_card())
-
-        self.show_hand("Player", self.human_hand)
-        self.check_split(self.human_hand)
-        print(f"Dealer's hand: \n{self.computer_hand.__str__(hide_second_card=True)}")
-
+    def player_turn(self):
         while True:
-            # Player's turn
             if input("\nHit or Stay? ").strip().lower() != "hit":
                 print("You chose to stay.")
                 break
@@ -53,7 +43,7 @@ class GameBlackJack:
                 print("Player busted! Dealer wins!")
                 return
 
-        # Player choice is stay, wait for the dealer card draw
+    def dealer_turn(self):
         while self.computer_hand.best_value() is None or self.computer_hand.best_value() < 17:
             self.computer_hand.add_card(self.deck.draw_card())
             if self.computer_hand.is_busted():
@@ -61,9 +51,28 @@ class GameBlackJack:
                 self.show_hand("Dealer", self.computer_hand)
                 return
 
-        # Final Table
+    def end_game_calculation(self):
         self.show_hand("Player", self.human_hand)
         self.show_hand("Dealer", self.computer_hand)
-        print(f"\nFinal Player hand values: {self.human_hand.calculate_values()}")
-        print(f"Final Dealer hand values: {self.computer_hand.calculate_values()}")
+        print(f"\nFinal Player hand values: {self.human_hand.calculate_values()} -> {self.human_hand.best_value()}")
+        print(f"Final Dealer hand values: {self.computer_hand.calculate_values()} -> {self.computer_hand.best_value()}")
         self.check_winner()
+
+    def play(self):
+        # Initial hands
+        for _ in range(2):
+            self.human_hand.add_card(self.deck.draw_card())
+            self.computer_hand.add_card(self.deck.draw_card())
+
+        self.show_hand("Player", self.human_hand)
+        self.check_split(self.human_hand)
+        print(f"Dealer's hand: \n{self.computer_hand.__str__(hide_second_card=True)}")
+
+        # Player's turn
+        self.player_turn()
+
+        # Dealer's turn
+        self.dealer_turn()
+
+        # Final Table
+        self.end_game_calculation()
