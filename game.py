@@ -4,7 +4,8 @@ from hand import Hand
 
 class GameBlackJack:
     def __init__(self):
-        self.deck = Deck()
+        self.deck = Deck(num_decks=6)
+        print(len(self.deck.cards))
         self.human_hand = Hand()
         self.computer_hand = Hand()
 

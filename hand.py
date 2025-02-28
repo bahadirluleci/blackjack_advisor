@@ -1,4 +1,4 @@
-from card import Ranks, VISUALIZATION
+from card import RANKS, VISUALIZATION
 
 
 class Hand:
@@ -37,7 +37,7 @@ class Hand:
         values = [0]
         for card in self.cards:
             if card.rank == "ACE":
-                values = [v + Ranks.ACE.value for v in values] + [v + 1 for v in values]
+                values = [v + 11 for v in values] + [v + 1 for v in values]
             else:
                 values = [v + card.value for v in values]
         return values
