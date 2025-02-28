@@ -9,7 +9,30 @@ class Hand:
         if card:
             self.cards.append(card)
 
-    def __str__(self):
+    def __str__(self, hide_second_card=False):
+        """ display with an option to hide the second card (dealer's first move) """
+        lines = [""] * 5  # Store each row of ASCII card representation
+
+        for i, card in enumerate(self.cards):
+            if hide_second_card and i == 1:  # Hide the second card
+                lines[0] += "┌─────┐  "
+                lines[1] += "│░░░░░│  "
+                lines[2] += "│░░░░░│  "
+                lines[3] += "│░░░░░│  "
+                lines[4] += "└─────┘  "
+            else:
+                rank = VISUALIZATION[card.rank]  # First letter of rank (T for TEN)
+                suit = {"Hearts": "♥", "Diamonds": "♦", "Clubs": "♣", "Spades": "♠"}[card.suit]  # Unicode symbols
+
+                lines[0] += "┌─────┐  "
+                lines[1] += f"│{rank:<2}   │  "  # Left-align rank
+                lines[2] += f"│  {suit}  │  "
+                lines[3] += f"│   {rank:>2}│  "  # Right-align rank
+                lines[4] += "└─────┘  "
+
+        return "\n".join(lines)  # Combine all rows
+
+    '''def __str__(self):
         """ Standard display or ASCII Art for a Better Visual Representation """
         # return " | ".join(f"[{card.rank} of {card.suit}]" for card in self.cards)
         lines = [""] * 5  # Store each row of the ASCII card representation
@@ -24,7 +47,7 @@ class Hand:
             lines[3] += f"│   {rank:>2}│  "  # Right-align rank
             lines[4] += "└─────┘  "
 
-        return "\n".join(lines)  # Combine all rows
+        return "\n".join(lines)  # Combine all rows'''
 
     def calculate_values(self):
         """Calculate possible hand values, considering Aces as 1 or 11."""

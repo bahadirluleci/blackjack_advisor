@@ -26,6 +26,10 @@ class GameBlackJack:
         else:
             print("It's a draw!")
 
+    def check_split(self, hand):
+        if len(hand.cards) >= 2 and hand.cards[0].rank == hand.cards[1].rank:
+            print("You can split your hand!")
+
     def play(self):
         # Initial hands
         for _ in range(2):
@@ -33,7 +37,8 @@ class GameBlackJack:
             self.computer_hand.add_card(self.deck.draw_card())
 
         self.show_hand("Player", self.human_hand)
-        self.show_hand("Dealer", self.computer_hand)
+        self.check_split(self.human_hand)
+        print(f"Dealer's hand: \n{self.computer_hand.__str__(hide_second_card=True)}")
 
         while True:
             # Player's turn
@@ -48,21 +53,17 @@ class GameBlackJack:
                 print("Player busted! Dealer wins!")
                 return
 
-            # Dealer's turn
-            if self.computer_hand.best_value() is None or self.computer_hand.best_value() < 17:
-                self.computer_hand.add_card(self.deck.draw_card())
-            self.show_hand("Dealer", self.computer_hand)
-
-            if self.computer_hand.is_busted():
-                print("Dealer busted! Player wins!")
-                return
-
         # Player choice is stay, wait for the dealer card draw
         while self.computer_hand.best_value() is None or self.computer_hand.best_value() < 17:
             self.computer_hand.add_card(self.deck.draw_card())
-            self.show_hand("Dealer", self.computer_hand)
+            if self.computer_hand.is_busted():
+                print("Dealer busted! Player wins!")
+                self.show_hand("Dealer", self.computer_hand)
+                return
 
-        # Final score check
+        # Final Table
+        self.show_hand("Player", self.human_hand)
+        self.show_hand("Dealer", self.computer_hand)
         print(f"\nFinal Player hand values: {self.human_hand.calculate_values()}")
         print(f"Final Dealer hand values: {self.computer_hand.calculate_values()}")
         self.check_winner()
