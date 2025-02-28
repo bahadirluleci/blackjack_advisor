@@ -47,6 +47,7 @@ class GameBlackJack:
             if self.human_hand.is_busted():
                 print("Player busted! Dealer wins!")
                 return
+            self.show_hand("Dealer", self.computer_hand)
 
         # Dealer's turn
         while self.computer_hand.best_value() is None or self.computer_hand.best_value() < 17:

@@ -3,7 +3,7 @@ Blackjack Game - Python Implementation
 
 Author: Bahadir Lüleci
 Date: 2025-02-27
-Version: 0.2
+Version: 0.3
 
 Description:
 ---------------
