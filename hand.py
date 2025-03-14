@@ -57,14 +57,10 @@ class Hand:
         return len(self.cards) == 2 and self.cards[0].value == 11 and self.cards[1].value == 11
 
     def can_double(self):
-        return len(self.cards) == 2 and (9 <= self.cards[0].value + self.cards[1].value <= 11)
+        return len(self.cards) == 2 and (9 <= sum(card.value for card in self.cards) <= 11)
 
     def is_hand_blackjack(self):
-        if len(self.cards) == 2:
-            return (self.cards[0].value == 11 and self.cards[1].value == 10) or \
-               (self.cards[0].value == 10 and self.cards[1].value == 11)
-        else:
-            return False
+        return len(self.cards) == 2 and self.best_value() == 21
 
     def is_hand_value_21(self):
         return any(value == 21 for value in self.calculate_values())
