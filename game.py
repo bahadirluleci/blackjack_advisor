@@ -36,6 +36,12 @@ class GameBlackJack:
             while True:
                 self.show_hand("Player", hand, i)
 
+                if hand.can_double():
+                    choice = input("Do you want to Double? (yes/no): ").strip().lower()
+                    if choice == "yes":
+                        hand.can_hit = False
+                        hand.add_card(self.deck.draw_card())
+
                 if hand.can_split():
                     choice = input("Do you want to split? (yes/no): ").strip().lower()
                     if choice == "yes":
