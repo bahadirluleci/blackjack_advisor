@@ -4,6 +4,7 @@ from card import RANKS, VISUALIZATION
 class Hand:
     def __init__(self):
         self.cards = []
+        self.can_hit = True
 
     def add_card(self, card):
         if card:
@@ -51,6 +52,9 @@ class Hand:
 
     def can_split(self):
         return len(self.cards) == 2 and self.cards[0].value == self.cards[1].value
+
+    def is_ace_split(self):
+        return len(self.cards) == 2 and self.cards[0].value == 11 and self.cards[1].value == 11
 
     def can_double(self):
         return len(self.cards) == 2 and (9 <= self.cards[0].value + self.cards[1].value <= 11)

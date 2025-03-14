@@ -40,6 +40,11 @@ class GameBlackJack:
                     choice = input("Do you want to split? (yes/no): ").strip().lower()
                     if choice == "yes":
                         new_hand = Hand()
+
+                        if hand.is_ace_split():
+                            hand.can_hit = False
+                            new_hand.can_hit = False
+
                         new_hand.add_card(hand.cards.pop())
                         new_hand.add_card(self.deck.draw_card())
                         hand.add_card(self.deck.draw_card())
@@ -48,6 +53,10 @@ class GameBlackJack:
 
                 if hand.is_hand_value_21():
                     print("You have 21! No more moves needed.")
+                    break
+
+                # Ace split or double position
+                if not hand.can_hit:
                     break
 
                 move = input("Hit or Stay? ").strip().lower()
@@ -73,13 +82,19 @@ class GameBlackJack:
                 return
 
     def end_game_calculation(self):
-        # check case blackjack
-        if self.human_hands[0].is_hand_blackjack() and not self.computer_hand.is_hand_blackjack():
-            print("Player wins with BLACKJACK!")
-            return
-        elif not self.human_hands[0].is_hand_blackjack() and self.computer_hand.is_hand_blackjack():
-            print("Dealer wins with BLACKJACK!")
-            return
+        print("Turns Completed! Let's check hands")
+        # case blackjack
+        if len(self.human_hands) == 1:
+            if self.human_hands[0].is_hand_blackjack() and not self.computer_hand.is_hand_blackjack():
+                print("Player wins with BLACKJACK!")
+                self.show_hand("Player", self.human_hands[0])
+                self.show_hand("Dealer", self.computer_hand)
+                return
+            elif not self.human_hands[0].is_hand_blackjack() and self.computer_hand.is_hand_blackjack():
+                print("Dealer wins with BLACKJACK!")
+                self.show_hand("Player", self.human_hands[0])
+                self.show_hand("Dealer", self.computer_hand)
+                return
 
         # value calculation
         for hand_index, hand in enumerate(self.human_hands):
