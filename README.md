@@ -101,6 +101,12 @@ if __name__ == "__main__":
 5. The winner is determined based on the best hand value.
 
 ---
+## Rules 
+1. S17: Dealer stands on 17 or more.
+2. Double: You can usually double on any 2 starting cards, although some tables permit only hands worth 9, 10 or 11
+3. Split: You can split any 2 cards of the same value. Only 1 additional card on split Aces. A split Ace + 10 counts as 21, not Blackjack
+
+---
 
 ## Future Improvements
 - Add a graphical user interface (GUI).
