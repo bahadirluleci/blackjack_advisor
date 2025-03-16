@@ -11,6 +11,7 @@ This project is a **console-based Blackjack game** implemented in Python. It fol
 | `card.py`   | Defines the `Card` class, representing individual playing cards. |
 | `deck.py`   | Implements the `Deck` class for handling card shuffling and drawing. |
 | `hand.py`   | Manages the player's and dealer's hands, including game rules like splitting, doubling, and busting. |
+| `strategy_table.py`   | Keeps the European Blackjack Strategy table |
 | `game.py`   | Contains the core game logic, including player and dealer turns. |
 | `main.py`   | The entry point for running the game. |
 | `README.md` | Documentation and instructions for using the game. |
@@ -74,6 +75,7 @@ class GameBlackJack:
   - `player_turn()`: Handles the player's turn.
   - `dealer_turn()`: Manages the dealer's automatic moves.
   - `check_winner(hand: Hand)`: Determines the winner.
+  - `get_best_move(player_hand: Hand)`: provides the player with the best move to make during their turn based on their current hand and the dealer's upcard
   - `end_game_calculation()`: Displays the final game result.
   - `play()`: Starts and runs the game.
 
@@ -117,8 +119,8 @@ if __name__ == "__main__":
 
 ## Author
 **Bahadir Lüleci**
-- **Date**: 2025-03-14
-- **Version**: 0.6.1
+- **Date**: 2025-03-16
+- **Version**: 1.0
 
 Enjoy the game!
 

@@ -1,5 +1,6 @@
 from deck import Deck
 from hand import Hand
+from strategy_table import HARD_STRATEGY, SOFT_STRATEGY, PAIR_STRATEGY, DEALER_UPCARD_MAPPING
 
 
 class GameBlackJack:
@@ -28,6 +29,34 @@ class GameBlackJack:
         else:
             print("It's a draw!")
 
+    def get_best_move(self, player_hand):
+
+        hand_values = [card.value for card in player_hand.cards]
+        dealer_value = self.computer_hand.cards[0].value  # checks only first card
+
+        num_aces = hand_values.count(11)
+
+        total_value = sum(hand_values)
+
+        while total_value > 21 and num_aces > 0:
+            total_value -= 10  # refer ace as 1
+            num_aces -= 1
+
+        # if pair hand
+        if len(player_hand.cards) == 2 and player_hand.cards[0].value == player_hand.cards[1].value:
+            pair_value = player_hand.cards[0].value
+            move = PAIR_STRATEGY.get(pair_value, {}).get(dealer_value, "S")  # if it is not in table return S
+
+        # if soft hand (Ace)
+        elif 11 in hand_values and sum(hand_values) <= 21:
+            move = SOFT_STRATEGY.get(total_value, {}).get(dealer_value, "S")  # if it is not in table return S
+
+        # if hard hand
+        else:
+            move = HARD_STRATEGY.get(total_value, {}).get(dealer_value, "S")  # if it is not in table return S
+
+        print(DEALER_UPCARD_MAPPING[move])
+
     def player_turn(self):
         i = 0
         while i < len(self.human_hands):
@@ -35,6 +64,10 @@ class GameBlackJack:
 
             while True:
                 self.show_hand("Player", hand, i)
+
+                strategy = input("Do you want to learn the best move? (yes/no): ").strip().lower()
+                if strategy == "yes":
+                    self.get_best_move(hand)
 
                 if hand.can_double():
                     choice = input("Do you want to Double? (yes/no): ").strip().lower()
@@ -65,7 +98,7 @@ class GameBlackJack:
                 if not hand.can_hit:
                     break
 
-                move = input("Hit or Stay? ").strip().lower()
+                move = input("Hit or Stand? ").strip().lower()
                 if move == "hit":
                     hand.add_card(self.deck.draw_card())
                     if hand.is_busted():
@@ -75,7 +108,7 @@ class GameBlackJack:
                         print("You have 21! No more moves needed.")
                         break
                 else:
-                    print("You chose to stay.")
+                    print("You chose to Stand.")
                     break
             i += 1  # Move to the next hand
 
