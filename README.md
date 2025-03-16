@@ -112,7 +112,6 @@ if __name__ == "__main__":
 
 ## Future Improvements
 - Add a graphical user interface (GUI).
-- User will be informed about the best move
 
 
 ---
